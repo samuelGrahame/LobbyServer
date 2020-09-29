@@ -1,6 +1,11 @@
-﻿using System;
+﻿using Microsoft.Extensions.DependencyInjection;
+using Newtonsoft.Json;
+using System;
 using System.Collections.Generic;
+using System.Diagnostics;
+using System.IO;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Runtime.InteropServices;
 using System.Security.Authentication;
 using System.Threading.Tasks;
@@ -8,7 +13,8 @@ using System.Threading.Tasks;
 namespace LobbyServer
 {
     public class Game
-    {        
+    {
+        public bool HasStarted { get; set; }
         public Guid Id { get; set; }
         public int MaxPlayersPerTeam { get; set; } = 5;
 
@@ -102,8 +108,117 @@ namespace LobbyServer
                 RedTeam = new List<PlayerInfo>(Players.Where(o => o.Team == Team.Red).
                     Select(o => new PlayerInfo() { Name   = o.Name, Champion = o.Champion })),
                 BlueTeam = new List<PlayerInfo>(Players.Where(o => o.Team == Team.Blue).
-                    Select(o => new PlayerInfo() { Name = o.Name, Champion = o.Champion }))
+                    Select(o => new PlayerInfo() { Name = o.Name, Champion = o.Champion })),
+                Port = HasStarted ? Port : (short)0
             };
+        }
+
+        public GameServerProcess Start()
+        {
+            // lets create a game process
+            var gameServerProcess = new GameServerProcess()
+            {
+                Game = this,
+                Port = Port
+            };
+            
+            CreateGameSettings();
+
+            var process = new Process();
+            process.StartInfo = new ProcessStartInfo(
+                Startup.LeagueGameServerConsole, 
+                $"-config \"{GameSettingPath()}\" -port \"{Port}\"");
+
+            process.Start();
+
+            gameServerProcess.Process = process;                       
+
+            LobbyList.ActiveGameProcess.Add(gameServerProcess);
+            LobbyList.AvailableGames.Remove(this);
+
+            this.HasStarted = true;
+
+            return gameServerProcess;
+        }
+
+        private void CreateGameSettings()
+        {
+            //create game file
+            var config = new GameSettings.GameSettingConfig()
+            {
+                Game = new GameSettings.Game()
+                {
+                    DataPackage = "LeagueSandbox-Scripts",
+                    Map = 1
+                },
+                GameInfo = new GameSettings.GameInfo()
+                {
+                    ManacostsEnabled = true,
+                    CooldownsEnabled = true,
+                    MinionSpawnsEnabled = true,
+                    ContentPath = "../../../../Content",
+                    IsDamageTextGlobal = false
+                }
+            };
+            config.Players = new GameSettings.Player[Players.Count];
+            // Assign Players
+            for (int i = 0; i < Players.Count; i++)
+            {
+                var player = Players[i];
+                player.GamePlayerId = i + 1;
+                var configPlayer = config.Players[i];
+                configPlayer.BlowfishKey = player.BlowFishKey;
+                configPlayer.Champion = player.Champion;
+                configPlayer.Icon = 0;
+                configPlayer.Rank = "DIAMOND";
+                configPlayer.Name = player.Name;
+                configPlayer.PlayerId = player.GamePlayerId;
+                configPlayer.Ribbon = 2;
+                configPlayer.Skin = 0;
+                configPlayer.Summoner1 = "SummonerHeal";
+                configPlayer.Summoner2 = "SummonerFlash";
+                configPlayer.Runes = new Dictionary<string, long>() {
+                    { "1", 5245 },
+                      {"2", 5245 },
+                      {"3", 5245},
+                      {"4", 5245},
+                      {"5", 5245},
+                      {"6", 5245},
+                      {"7", 5245},
+                      {"8", 5245},
+                      {"9", 5245},
+                      {"10", 5317},
+                      {"11", 5317},
+                      {"12", 5317},
+                      {"13", 5317},
+                      {"14", 5317},
+                      {"15", 5317},
+                      {"16", 5317},
+                      {"17", 5317},
+                      {"18", 5317},
+                      {"19", 5289},
+                      {"20", 5289},
+                      {"21", 5289},
+                      {"22", 5289},
+                      {"23", 5289 },
+                      {"24", 5289},
+                      {"25", 5289},
+                      {"26", 5289},
+                      {"27", 5289},
+                      {"28", 5335},
+                      {"29", 5335},
+                      {"30", 5335}
+                    };
+                configPlayer.Team = player.Team.ToString("G").ToUpper();
+            }
+
+            System.IO.File.WriteAllText(GameSettingPath(), JsonConvert.SerializeObject(config));
+
+        }
+
+        private string GameSettingPath()
+        {
+            return Path.Combine(Startup.GameSettngLocation, Id.ToString() + ".json");
         }
     }
 
@@ -117,6 +232,7 @@ namespace LobbyServer
 
     public class GameInfoDetailed
     {
+        public short Port { get; set; }
         public Guid Id { get; set; }
         public string LobbyName { get; set; }
         public List<PlayerInfo> RedTeam { get; set; }

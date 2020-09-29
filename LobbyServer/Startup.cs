@@ -19,6 +19,7 @@ namespace LobbyServer
         public static List<string> AvailableChampions { get; set; }
         public static List<short> AvailablePorts { get; set; }
         public static string LeagueGameServerConsole { get; set; }
+        public static string GameSettngLocation { get; set; }
 
         public Startup(IConfiguration configuration)
         {            
@@ -27,10 +28,16 @@ namespace LobbyServer
             var lobbySection = Configuration.GetSection("LobbySettings");
 
             LeagueGameServerConsole = lobbySection.GetValue<string>("LeagueGameServerConsole");
+            GameSettngLocation = lobbySection.GetValue<string>("GameSettngLocation");
 
-            if(!File.Exists(LeagueGameServerConsole))
+            if (!File.Exists(LeagueGameServerConsole))
             {
                 throw new Exception($"{LeagueGameServerConsole} is not a valid path for: LeagueGameServerConsole");
+            }
+
+            if(!Directory.Exists(GameSettngLocation))
+            {
+                throw new Exception($"{GameSettngLocation} is not a directoy for: GameSettngLocation");
             }
 
             var ScriptChampLocation = Path.Combine(lobbySection.GetValue<string>("LeagueSandboxContent"), @"LeagueSandbox-Scripts\Champions");

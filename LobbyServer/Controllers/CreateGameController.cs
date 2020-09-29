@@ -19,7 +19,7 @@ namespace LobbyServer.Controllers
         }
 
         [HttpGet]
-        public GameInfoDetailed Get(Player player, string passwordPhrase)
+        public GameInfoDetailed Get(Player player, string passwordPhrase, int maxPlayerPerTeam = 5)
         {
             if(player == null)
             {
@@ -45,7 +45,8 @@ namespace LobbyServer.Controllers
                 Host = player,
                 Id = Guid.NewGuid(),
                 Port = portToUse,
-                PasswordPhrase = passwordPhrase
+                PasswordPhrase = passwordPhrase,
+                MaxPlayersPerTeam = maxPlayerPerTeam
             };
 
             game.Join(player, passwordPhrase);

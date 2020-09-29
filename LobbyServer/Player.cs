@@ -12,6 +12,8 @@ namespace LobbyServer
         public Team Team { get; set; }
         public string BlowFishKey { get; set; }
 
+        public int GamePlayerId;
+
         public void Validate()
         {
             if (string.IsNullOrWhiteSpace(Name))
