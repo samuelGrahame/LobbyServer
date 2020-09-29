@@ -41,10 +41,16 @@ namespace LobbyServer
             }
 
             var ScriptChampLocation = Path.Combine(lobbySection.GetValue<string>("LeagueSandboxContent"), @"LeagueSandbox-Scripts\Champions");
-
-
-            AvailablePorts = lobbySection.GetValue<List<short>>("AvailablePorts");
-            if (AvailablePorts?.Count == 0)
+            AvailablePorts = new List<short>();
+            foreach (var item in lobbySection.GetSection("AvailablePorts").AsEnumerable())
+            {                
+                if(short.TryParse(item.Value, out short port))
+                {
+                    AvailablePorts.Add(port);
+                }
+            }
+            
+            if (AvailablePorts.Count == 0)
             {
                 AvailablePorts = new List<short>() { 5119 };
             }
@@ -55,7 +61,7 @@ namespace LobbyServer
             {
                 foreach (var item in Directory.GetDirectories(ScriptChampLocation))
                 {                    
-                    var dirName = Path.GetDirectoryName(item);
+                    var dirName = Path.GetFileName(item);
                     if (dirName.ToLower() == "global")
                         continue;
                     AvailableChampions.Add(dirName);

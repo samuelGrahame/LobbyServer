@@ -130,10 +130,7 @@ namespace LobbyServer
             {
                 StartInfo = new ProcessStartInfo(
                 Startup.LeagueGameServerConsole,
-                $"-config \"{GameSettingPath()}\" -port \"{Port}\"")
-                { 
-                    CreateNoWindow = true
-                },
+                $"-config \"{GameSettingPath()}\" -port \"{Port}\""),                
                 EnableRaisingEvents = true
             };                        
             process.Exited += new EventHandler((s, ev) => {
@@ -177,7 +174,7 @@ namespace LobbyServer
             {
                 var player = Players[i];
                 player.GamePlayerId = i + 1;
-                var configPlayer = config.Players[i];
+                var configPlayer = config.Players[i] = new GameSettings.Player();
                 configPlayer.BlowfishKey = player.BlowFishKey;
                 configPlayer.Champion = player.Champion;
                 configPlayer.Icon = 0;

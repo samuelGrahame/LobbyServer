@@ -18,8 +18,8 @@ namespace LobbyServer.Controllers
             _logger = logger;
         }
 
-        [HttpGet]
-        public GameInfoDetailed Get(Player player, string passwordPhrase, int maxPlayerPerTeam = 5)
+        [HttpPost]
+        public GameInfoDetailed Post([FromBody]Player player, string passwordPhrase = "", int maxPlayerPerTeam = 5)
         {
             if(player == null)
             {

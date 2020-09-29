@@ -19,8 +19,8 @@ namespace LobbyServer.Controllers
             _logger = logger;
         }
 
-        [HttpGet]
-        public GameInfoDetailed Get(Guid id, Player player, string passwordPhrase)
+        [HttpPost]
+        public GameInfoDetailed Post(Guid id, [FromBody] Player player, string passwordPhrase = "")
         {
             if(player == null)
             {
@@ -29,7 +29,7 @@ namespace LobbyServer.Controllers
 
             player.Validate();
 
-            var game = LobbyList.AvailableGames?.First(o => o.Id == id);
+            var game = LobbyList.AvailableGames?.FirstOrDefault(o => o.Id == id);
 
             if (game == null)
             {
