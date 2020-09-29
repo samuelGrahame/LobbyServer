@@ -18,18 +18,32 @@ namespace LobbyServer
     {
         public static List<string> AvailableChampions { get; set; }
         public static List<short> AvailablePorts { get; set; }
+        public static string LeagueGameServerConsole { get; set; }
 
         public Startup(IConfiguration configuration)
         {            
             Configuration = configuration;
-            //LeagueSandbox-Scripts\Champions
+            
             var lobbySection = Configuration.GetSection("LobbySettings");
+
+            LeagueGameServerConsole = lobbySection.GetValue<string>("LeagueGameServerConsole");
+
+            if(!File.Exists(LeagueGameServerConsole))
+            {
+                throw new Exception($"{LeagueGameServerConsole} is not a valid path for: LeagueGameServerConsole");
+            }
 
             var ScriptChampLocation = Path.Combine(lobbySection.GetValue<string>("LeagueSandboxContent"), @"LeagueSandbox-Scripts\Champions");
 
-            AvailablePorts = lobbySection.GetValue<List<short>>("AvailablePorts");
 
+            AvailablePorts = lobbySection.GetValue<List<short>>("AvailablePorts");
+            if (AvailablePorts?.Count == 0)
+            {
+                AvailablePorts = new List<short>() { 5119 };
+            }
+            
             AvailableChampions = new List<string>();
+
             if (Directory.Exists(ScriptChampLocation))
             {
                 foreach (var item in Directory.GetDirectories(ScriptChampLocation))
