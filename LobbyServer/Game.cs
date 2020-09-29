@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 namespace LobbyServer
 {
     public class Game
-    {
+    {        
         public Guid Id { get; set; }
         public int MaxPlayersPerTeam { get; set; } = 5;
 
@@ -16,6 +16,8 @@ namespace LobbyServer
         public string PasswordPhrase { get; set; }
 
         public List<Player> Players { get; set; } = new List<Player>();
+
+        public short Port { get; set; }
 
         public bool IsFull => IsRedTeamFull && IsRedTeamFull;
         public bool IsRedTeamFull => Players.Count(o => o.Team == Team.Red) >= MaxPlayersPerTeam;

@@ -17,12 +17,18 @@ namespace LobbyServer
     public class Startup
     {
         public static List<string> AvailableChampions { get; set; }
+        public static List<short> AvailablePorts { get; set; }
 
         public Startup(IConfiguration configuration)
         {            
             Configuration = configuration;
             //LeagueSandbox-Scripts\Champions
-            var ScriptChampLocation = Path.Combine(Configuration.GetSection("LobbdySettings").GetValue<string>("LeagueSandboxContent"), @"LeagueSandbox-Scripts\Champions");
+            var lobbySection = Configuration.GetSection("LobbySettings");
+
+            var ScriptChampLocation = Path.Combine(lobbySection.GetValue<string>("LeagueSandboxContent"), @"LeagueSandbox-Scripts\Champions");
+
+            AvailablePorts = lobbySection.GetValue<List<short>>("AvailablePorts");
+
             AvailableChampions = new List<string>();
             if (Directory.Exists(ScriptChampLocation))
             {
