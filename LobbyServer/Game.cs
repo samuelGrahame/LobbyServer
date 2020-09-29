@@ -49,20 +49,7 @@ namespace LobbyServer
                 }
             }
 
-            if(string.IsNullOrWhiteSpace(player.Name))
-            {
-                throw new ArgumentNullException(nameof(player.Name));
-            }
-
-            if (string.IsNullOrWhiteSpace(player.Champion))
-            {
-                throw new ArgumentNullException(nameof(player.Champion));
-            }
-
-            if(!Startup.AvailableChampions.Any(o => string.CompareOrdinal(player.Champion, o) == 0))
-            {
-                throw new Exception($"{nameof(player.Champion)} is not in the list of available champions");
-            }
+            player.Validate();
 
             var team = WhatTeamShouldIJoin();
             if(team == Team.None)

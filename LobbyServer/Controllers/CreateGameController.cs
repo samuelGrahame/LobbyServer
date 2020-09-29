@@ -21,6 +21,13 @@ namespace LobbyServer.Controllers
         [HttpGet]
         public GameInfoDetailed Get(Player player, string passwordPhrase)
         {
+            if(player == null)
+            {
+                throw new ArgumentNullException(nameof(player));
+            }
+
+            player.Validate();
+
             // reserve a port.
             var listOfAllPorts = LobbyList.AvailableGames.Select(o => o.Port)?.ToList();
             listOfAllPorts.AddRange(LobbyList.ActiveGameProcess.Select(o => o.Port)?.ToList());
