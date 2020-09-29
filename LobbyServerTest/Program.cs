@@ -35,7 +35,7 @@ namespace LobbyServerTest
 
             Console.WriteLine("What is your player name?");
 
-            player.Name = "sam";  //Console.ReadLine();
+            player.Name = Console.ReadLine();
 
             if(champions?.Count == 0)
             {
@@ -52,8 +52,8 @@ namespace LobbyServerTest
                     Console.WriteLine($"{i}. {champions[i]}");
                 }
                 var index = -1;
-                //int.TryParse(Console.ReadLine(), out index);
-                index = 14;
+                int.TryParse(Console.ReadLine(), out index);
+               // index = 14;
 
                 if(index > -1 && index <= champions.Count - 1)
                 {
