@@ -43,7 +43,7 @@ namespace LobbyServer.Controllers
             {
                 // we need to create
                 game.Start();
-                return game.GetInfoDetailed();
+                return game.GetInfoDetailed(player.BlowFishKey);
             }
             else
             {

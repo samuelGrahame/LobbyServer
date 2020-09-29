@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.IO;
 using System.Net;
 using System.Net.Http;
 using System.Text;
@@ -34,7 +35,7 @@ namespace LobbyServerTest
 
             Console.WriteLine("What is your player name?");
 
-            player.Name = Console.ReadLine();
+            player.Name = "sam";  //Console.ReadLine();
 
             if(champions?.Count == 0)
             {
@@ -51,7 +52,8 @@ namespace LobbyServerTest
                     Console.WriteLine($"{i}. {champions[i]}");
                 }
                 var index = -1;
-                int.TryParse(Console.ReadLine(), out index);
+                //int.TryParse(Console.ReadLine(), out index);
+                index = 14;
 
                 if(index > -1 && index <= champions.Count - 1)
                 {
@@ -90,13 +92,14 @@ namespace LobbyServerTest
 
             var argsLine = $"\"8394\" \"LoLLauncher.exe\" \"\" \"127.0.0.1 {startInfo.Port} {player.BlowFishKey} {startInfo.MyPlayerId}\"";
 
-
+            var exeLoc = @"C:\LeagueFake\League of Legends_UNPACKED\League of Legends_UNPACKED\League-of-Legends-4-20\RADS\solutions\lol_game_client_sln\releases\0.0.1.68\deploy\League of Legends.exe";
             var processInfo = new ProcessStartInfo(
-                @"C:\LeagueFake\League of Legends_UNPACKED\League of Legends_UNPACKED\League-of-Legends-4-20\RADS\solutions\lol_game_client_sln\releases\0.0.1.68\deploy\League of Legends.exe",
+                exeLoc,
                 argsLine);
 
             var process = new Process();
             process.StartInfo = processInfo;
+            process.StartInfo.WorkingDirectory = Path.GetDirectoryName(exeLoc);
             process.Start();
 
             Console.ReadKey();

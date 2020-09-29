@@ -130,21 +130,32 @@ namespace LobbyServer
             {
                 StartInfo = new ProcessStartInfo(
                 Startup.LeagueGameServerConsole,
-                $"-config \"{GameSettingPath()}\" -port \"{Port}\""),                
+                $"--config \"{GameSettingPath()}\" --port \"{Port}\""),                
                 EnableRaisingEvents = true
-            };                        
+            };
+            bool hasExited = false;
             process.Exited += new EventHandler((s, ev) => {
+                hasExited = true;
                 LobbyList.ActiveGameProcess.Remove(gameServerProcess);
             });
+            process.StartInfo.UseShellExecute = false;
+            process.StartInfo.RedirectStandardOutput = true;
 
+            process.StartInfo.WorkingDirectory = Path.GetDirectoryName(Startup.LeagueGameServerConsole);
             process.Start();
 
-            gameServerProcess.Process = process;                       
+            gameServerProcess.Process = process;
 
             LobbyList.ActiveGameProcess.Add(gameServerProcess);
             LobbyList.AvailableGames.Remove(this);
 
             this.HasStarted = true;
+
+            while (!hasExited &&
+                !(process.StandardOutput.ReadLine()?.Contains("Server is ready, clients can now connect.") ?? true))
+            {
+
+            }
 
             return gameServerProcess;
         }
