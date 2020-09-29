@@ -25,16 +25,26 @@ namespace LobbyServer.Controllers
             var listOfAllPorts = LobbyList.AvailableGames.Select(o => o.Port)?.ToList();
             listOfAllPorts.AddRange(LobbyList.ActiveGameProcess.Select(o => o.Port)?.ToList());
 
-
+            var freePorts = Startup.AvailablePorts.Where(o => !listOfAllPorts.Contains(o))?.ToList();
             
-            var game = LobbyList.AvailableGames?.First(o => o.Id == id);
-
-            if(game == null)
+            if(freePorts?.Count == 0)
             {
-                throw new NullReferenceException(nameof(game));
+                throw new Exception("No Available ports to play a game");
             }
+
+            var portToUse = freePorts.FirstOrDefault();
+            var game = new Game()
+            {
+                Host = player,
+                Id = Guid.NewGuid(),
+                Port = portToUse,
+                PasswordPhrase = passwordPhrase
+            };
+
             game.Join(player, passwordPhrase);
 
+            LobbyList.AvailableGames.Add(game);
+            
             return game.GetInfoDetailed();
         }
     }
