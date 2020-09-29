@@ -126,12 +126,16 @@ namespace LobbyServer
             
             CreateGameSettings();
 
-            var process = new Process();
-            process.StartInfo = new ProcessStartInfo(
-                Startup.LeagueGameServerConsole, 
-                $"-config \"{GameSettingPath()}\" -port \"{Port}\"");
-            process.StartInfo.CreateNoWindow = true;
-            process.EnableRaisingEvents = true;
+            var process = new Process
+            {
+                StartInfo = new ProcessStartInfo(
+                Startup.LeagueGameServerConsole,
+                $"-config \"{GameSettingPath()}\" -port \"{Port}\"")
+                { 
+                    CreateNoWindow = true
+                },
+                EnableRaisingEvents = true
+            };                        
             process.Exited += new EventHandler((s, ev) => {
                 LobbyList.ActiveGameProcess.Remove(gameServerProcess);
             });
