@@ -99,7 +99,7 @@ namespace LobbyServer
             };
         }
 
-        public GameInfoDetailed GetInfoDetailed()
+        public GameInfoDetailed GetInfoDetailed(string blowFishKey = "")
         {
             return new GameInfoDetailed()
             {
@@ -109,7 +109,9 @@ namespace LobbyServer
                     Select(o => new PlayerInfo() { Name   = o.Name, Champion = o.Champion })),
                 BlueTeam = new List<PlayerInfo>(Players.Where(o => o.Team == Team.Blue).
                     Select(o => new PlayerInfo() { Name = o.Name, Champion = o.Champion })),
-                Port = HasStarted ? Port : (short)0
+                Port = HasStarted ? Port : (short)0,
+                MyPlayerId = HasStarted && !string.IsNullOrWhiteSpace(blowFishKey)  ? Players.FirstOrDefault(o => 
+                    string.CompareOrdinal(o.BlowFishKey, blowFishKey) == 0)?.GamePlayerId ?? 0 : 0
             };
         }
 
@@ -232,6 +234,7 @@ namespace LobbyServer
 
     public class GameInfoDetailed
     {
+        public int MyPlayerId { get; set; }
         public short Port { get; set; }
         public Guid Id { get; set; }
         public string LobbyName { get; set; }

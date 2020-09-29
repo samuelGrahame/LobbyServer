@@ -35,6 +35,10 @@ namespace LobbyServer.Controllers
             {
                 throw new NullReferenceException(nameof(game));
             }
+            if(string.CompareOrdinal(game.PasswordPhrase, passwordPhrase) != 0)
+            {
+                throw new InvalidCredentialException();
+            }
             if(string.CompareOrdinal(game.Host.BlowFishKey, player.BlowFishKey) == 0)
             {
                 // we need to create

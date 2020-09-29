@@ -31,15 +31,18 @@ namespace LobbyServer.Controllers
 
             var game = LobbyList.AvailableGames?.First(o => o.Id == id);
 
+            if(game == null)
+            {
+                game = LobbyList.ActiveGameProcess?.First(o => o.Game.Id == id)?.Game;
+            }
             if (game == null)
             {
+
                 throw new NullReferenceException(nameof(game));
             }
-            if(string.CompareOrdinal(game.Host.BlowFishKey, player.BlowFishKey) == 0)
-            {
-                // we need to create
-                game.Start();
-                return game.GetInfoDetailed();
+            if(string.CompareOrdinal(game.PasswordPhrase, passwordPhrase) == 0)
+            {                                
+                return game.GetInfoDetailed(player.BlowFishKey);
             }
             else
             {
