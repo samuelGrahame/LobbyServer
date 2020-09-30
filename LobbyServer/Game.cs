@@ -95,11 +95,12 @@ namespace LobbyServer
                 Id = Id,
                 LobbyName = $"{Host.Name}'s lobby",
                 TotalSlots = MaxPlayersPerTeam * 2,
-                TotalAvailable = (MaxPlayersPerTeam * 2) - Players.Count
+                TotalAvailable = (MaxPlayersPerTeam * 2) - Players.Count,
+                PasswordProtected = !string.IsNullOrWhiteSpace(PasswordPhrase)
             };
         }
 
-        public GameInfoDetailed GetInfoDetailed(string blowFishKey = "")
+        public GameInfoDetailed GetInfoDetailed(string blowFishKey = "", string name = "")
         {
             return new GameInfoDetailed()
             {
@@ -111,7 +112,7 @@ namespace LobbyServer
                     Select(o => new PlayerInfo() { Name = o.Name, Champion = o.Champion })),
                 Port = HasStarted ? Port : (short)0,
                 MyPlayerId = HasStarted && !string.IsNullOrWhiteSpace(blowFishKey)  ? Players.FirstOrDefault(o => 
-                    string.CompareOrdinal(o.BlowFishKey, blowFishKey) == 0)?.GamePlayerId ?? 0 : 0
+                    string.CompareOrdinal(o.BlowFishKey, blowFishKey) == 0 && string.CompareOrdinal(o.Name, name) == 0)?.GamePlayerId ?? 0 : 0
             };
         }
 
@@ -247,6 +248,7 @@ namespace LobbyServer
         public string LobbyName { get; set; }
         public int TotalAvailable { get; set; }
         public int TotalSlots { get; set; }
+        public bool PasswordProtected { get; set; }
     }
 
     public class GameInfoDetailed

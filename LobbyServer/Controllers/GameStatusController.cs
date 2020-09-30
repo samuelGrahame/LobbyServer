@@ -19,8 +19,8 @@ namespace LobbyServer.Controllers
             _logger = logger;
         }
 
-        [HttpGet]
-        public GameInfoDetailed Get(Guid id, Player player, string passwordPhrase)
+        [HttpPost]
+        public GameInfoDetailed Post(Guid id, [FromBody]Player player, string passwordPhrase = "")
         {
             if(player == null)
             {
@@ -29,20 +29,20 @@ namespace LobbyServer.Controllers
 
             player.Validate();
 
-            var game = LobbyList.AvailableGames?.First(o => o.Id == id);
+            var game = LobbyList.AvailableGames?.FirstOrDefault(o => o.Id == id);
 
             if(game == null)
             {
-                game = LobbyList.ActiveGameProcess?.First(o => o.Game.Id == id)?.Game;
+                game = LobbyList.ActiveGameProcess?.FirstOrDefault(o => o.Game.Id == id)?.Game;
             }
             if (game == null)
             {
 
                 throw new NullReferenceException(nameof(game));
             }
-            if(string.CompareOrdinal(game.PasswordPhrase, passwordPhrase) == 0)
+            if(string.IsNullOrWhiteSpace(game.PasswordPhrase) || string.CompareOrdinal(game.PasswordPhrase, passwordPhrase) == 0)
             {                                
-                return game.GetInfoDetailed(player.BlowFishKey);
+                return game.GetInfoDetailed(player.BlowFishKey, player.Name);
             }
             else
             {

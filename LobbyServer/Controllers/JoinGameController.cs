@@ -18,8 +18,8 @@ namespace LobbyServer.Controllers
             _logger = logger;
         }
 
-        [HttpGet]
-        public GameInfoDetailed Get(Guid id, Player player, string passwordPhrase)
+        [HttpPost]
+        public GameInfoDetailed Post(Guid id, [FromBody]Player player, string passwordPhrase  = "")
         {
             var game = LobbyList.AvailableGames?.First(o => o.Id == id);
 

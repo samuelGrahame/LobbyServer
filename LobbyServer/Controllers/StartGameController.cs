@@ -35,7 +35,7 @@ namespace LobbyServer.Controllers
             {
                 throw new NullReferenceException(nameof(game));
             }
-            if(string.CompareOrdinal(game.PasswordPhrase, passwordPhrase) != 0)
+            if(!string.IsNullOrWhiteSpace(passwordPhrase) && string.CompareOrdinal(game.PasswordPhrase, passwordPhrase) != 0)
             {
                 throw new InvalidCredentialException();
             }
@@ -43,7 +43,7 @@ namespace LobbyServer.Controllers
             {
                 // we need to create
                 game.Start();
-                return game.GetInfoDetailed(player.BlowFishKey);
+                return game.GetInfoDetailed(player.BlowFishKey, player.Name);
             }
             else
             {
